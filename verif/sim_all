@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./ip/x_bin_to_therm/sim
+./ip/x_mem_2p_2048x2/sim
+
