@@ -1,0 +1,10 @@
+#!/bin/bash
+
+verilator --trace \
+   -CFLAGS "-DTRACE_ENABLED" \
+   --cc rtl/x_bin_to_therm.sv \
+   --exe verif/tb.cpp
+
+make -C obj_dir -f Vx_bin_to_therm.mk Vx_bin_to_therm
+
+./obj_dir/Vx_bin_to_therm

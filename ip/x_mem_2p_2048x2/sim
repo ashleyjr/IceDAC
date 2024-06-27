@@ -1,0 +1,10 @@
+#!/bin/bash
+
+verilator --trace \
+   -CFLAGS "-DTRACE_ENABLED" \
+   --cc rtl/x_mem_2p_2048x2.sv \
+   --exe verif/tb.cpp
+
+make -C obj_dir -f Vx_mem_2p_2048x2.mk Vx_mem_2p_2048x2
+
+./obj_dir/Vx_mem_2p_2048x2
