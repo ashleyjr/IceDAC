@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Add sims here
 TESTS=(
    x_bin_to_therm
    x_mem_2p_2048x2
@@ -14,7 +15,6 @@ trap exit_trap EXIT
 
 set -e
 
-# Add Tests here
 for TEST in "${TESTS[@]}"; do
    echo -n "${TEST}..."
    ./ip/$TEST/sim > /dev/null
