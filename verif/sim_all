@@ -3,6 +3,7 @@
 # Add sims here
 TESTS=(
    x_bin_to_therm
+   x_mem
    x_mem_2p_2048x2
 )
 
