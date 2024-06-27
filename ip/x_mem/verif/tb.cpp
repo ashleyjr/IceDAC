@@ -3,13 +3,13 @@
 #include <cstdlib>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
-#include "Vx_mem_2p_2048x2.h"
+#include "Vx_mem.h"
 #include <stdio.h>
 
 int main(int argc, char** argv, char** env) {
    
    vluint64_t sim_time = 0; 
-   Vx_mem_2p_2048x2 *dut = new Vx_mem_2p_2048x2; 
+   Vx_mem *dut = new Vx_mem; 
    Verilated::traceEverOn(true);
    
    #ifdef TRACE_ENABLED

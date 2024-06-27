@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+TOP=x_mem
+
+
+verilator --trace \
+   -CFLAGS "-DTRACE_ENABLED" \
+   --Mdir ${SCRIPT_DIR}/obj_dir \
+   --cc ${SCRIPT_DIR}/rtl/${TOP}.sv \
+   --cc ${SCRIPT_DIR}/../x_mem_2p_2048x2/rtl/x_mem_2p_2048x2.sv \ 
+   --exe ${SCRIPT_DIR}/verif/tb.cpp
+
+make -C ${SCRIPT_DIR}/obj_dir -f V${TOP}.mk V${TOP}
+
+/${SCRIPT_DIR}/obj_dir/V${TOP}
