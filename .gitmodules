@@ -1,0 +1,3 @@
+[submodule "ip/rtl-uart"]
+	path = ip/rtl-uart
+	url = https://github.com/ashleyjr/rtl-uart/
