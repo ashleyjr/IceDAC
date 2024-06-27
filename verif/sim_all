@@ -1,5 +1,26 @@
 #!/bin/bash
 
-./ip/x_bin_to_therm/sim
-./ip/x_mem_2p_2048x2/sim
+TESTS=(
+   x_bin_to_therm
+   x_mem_2p_2048x2
+)
 
+exit_trap () {
+   local rc=$? 
+   echo "FAIL (with code [$rc])"
+}
+
+trap exit_trap EXIT
+
+set -e
+
+# Add Tests here
+for TEST in "${TESTS[@]}"; do
+   echo -n "${TEST}..."
+   ./ip/$TEST/sim > /dev/null
+   echo "PASS"
+done
+
+trap - EXIT 
+
+exit 0

@@ -1,10 +1,16 @@
 #!/bin/bash
 
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+TOP=x_bin_to_therm
+
+
 verilator --trace \
    -CFLAGS "-DTRACE_ENABLED" \
-   --cc rtl/x_bin_to_therm.sv \
-   --exe verif/tb.cpp
+   --Mdir ${SCRIPT_DIR}/obj_dir \
+   --cc ${SCRIPT_DIR}/rtl/${TOP}.sv \
+   --exe ${SCRIPT_DIR}/verif/tb.cpp
 
-make -C obj_dir -f Vx_bin_to_therm.mk Vx_bin_to_therm
+make -C ${SCRIPT_DIR}/obj_dir -f V${TOP}.mk V${TOP}
 
-./obj_dir/Vx_bin_to_therm
+/${SCRIPT_DIR}/obj_dir/V${TOP}

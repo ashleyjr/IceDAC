@@ -85,5 +85,5 @@ int main(int argc, char** argv, char** env) {
 
    delete dut;
    std::cout << "PASS\n";
-   exit(EXIT_SUCCESS);
+   exit(EXIT_FAILURE);
 }
