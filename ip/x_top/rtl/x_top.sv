@@ -4,10 +4,20 @@ module x_top(
    input    logic          i_rx,
    output   logic          o_tx,
    output   logic [63:0]   o_code
-)
+);
+
+   logic          rx_valid;
+   logic [7:0]    rx;
+   logic          tx_valid;
+   logic [7:0]    tx;
+   logic [10:0]   addr;
+   logic          we;
+   logic [5:0]    wdata;
+   logic [5:0]    rdata;
+   logic [5:0]    bin;
 
    x_uart_rx u_rx(
-      .i_clk            (clk     ),
+      .i_clk            (i_clk   ),
       .i_rst_n          (i_nrst  ),
       .i_rx             (i_rx    ),
       .o_valid          (rx_valid),
@@ -15,15 +25,16 @@ module x_top(
    );
 
    x_uart_tx u_tx(
-      .i_clk            (clk     ),
+      .i_clk            (i_clk   ),
       .i_rst_n          (i_nrst  ),
       .o_tx             (o_tx    ),
       .i_valid          (tx_valid),
-      .i_data           (tx      )
+      .i_data           (tx      ),
+      .o_accept         ()
    );
    
    x_ctrl u_ctrl(
-      .i_clk            (clk     ),
+      .i_clk            (i_clk   ),
       .i_nrst           (i_nrst  ),                    
       .i_cmd_valid      (rx_valid),
       .i_cmd            (rx      ),
@@ -36,7 +47,7 @@ module x_top(
    );
 
    x_mem u_mem(
-      .i_clk            (clk     ),
+      .i_clk            (i_clk   ),
       .i_nrst           (i_nrst  ),
       .i_addr           (addr    ),
       .i_we             (we      ),
@@ -44,8 +55,8 @@ module x_top(
       .o_rdata          (rdata   )
    );
 
-   x_bin_to_therm(
-      .i_clk            (clk     ),
+   x_bin_to_therm u_bin_to_therm(
+      .i_clk            (i_clk   ),
       .i_nrst           (i_nrst  ),
       .i_bin            (bin     ),
       .o_therm          (o_code  )

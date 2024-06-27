@@ -2,7 +2,7 @@
 
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TOP=x_mem
+TOP=x_top
 
 
 verilator --trace \
@@ -10,6 +10,11 @@ verilator --trace \
    --Mdir ${SCRIPT_DIR}/obj_dir \
    --cc ${SCRIPT_DIR}/rtl/${TOP}.sv \
    --cc ${SCRIPT_DIR}/../x_mem_2p_2048x2/rtl/x_mem_2p_2048x2.sv \
+   --cc ${SCRIPT_DIR}/../x_mem/rtl/x_mem.sv \
+   --cc ${SCRIPT_DIR}/../x_ctrl/rtl/x_ctrl.sv \
+   --cc ${SCRIPT_DIR}/../x_bin_to_therm/rtl/x_bin_to_therm.sv \
+   --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_rx.sv \
+   --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_tx.sv \
    --exe ${SCRIPT_DIR}/verif/tb.cpp
 
 make -C ${SCRIPT_DIR}/obj_dir -f V${TOP}.mk V${TOP}
