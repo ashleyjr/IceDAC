@@ -3,8 +3,8 @@ module x_mem(
    input  logic            i_clk,
    input  logic   [10:0]   i_addr,
    input  logic            i_we,
-   input  logic   [7:0]    i_wdata,   
-   output logic   [7:0]    o_rdata
+   input  logic   [5:0]    i_wdata,   
+   output logic   [5:0]    o_rdata
 );
    
    logic [10:0]   addr_q   [0:2];

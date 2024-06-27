@@ -16,7 +16,9 @@ module x_top(
    logic [5:0]    rdata;
    logic [5:0]    bin;
 
-   x_uart_rx u_rx(
+   x_uart_rx #(
+      .p_baud           (9600    )
+   ) u_rx (
       .i_clk            (i_clk   ),
       .i_rst_n          (i_nrst  ),
       .i_rx             (i_rx    ),
@@ -24,7 +26,9 @@ module x_top(
       .o_data           (rx      )
    );
 
-   x_uart_tx u_tx(
+   x_uart_tx #(
+      .p_baud           (9600    )
+   ) u_tx (
       .i_clk            (i_clk   ),
       .i_rst_n          (i_nrst  ),
       .o_tx             (o_tx    ),
@@ -43,7 +47,8 @@ module x_top(
       .o_addr           (addr    ),         
       .o_wdata_valid    (we      ),
       .o_wdata          (wdata   ),        
-      .i_rdata          (rdata   )
+      .i_rdata          (rdata   ),
+      .o_bin_code       (bin     )
    );
 
    x_mem u_mem(

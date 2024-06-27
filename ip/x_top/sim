@@ -15,7 +15,9 @@ verilator --trace \
    --cc ${SCRIPT_DIR}/../x_bin_to_therm/rtl/x_bin_to_therm.sv \
    --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_rx.sv \
    --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_tx.sv \
-   --exe ${SCRIPT_DIR}/verif/tb.cpp
+   --cc ${SCRIPT_DIR}/../rtl-uart/verif/lib//uart_driver.cpp \
+   --exe ${SCRIPT_DIR}/verif/tb.cpp \
+   +define+SIM
 
 make -C ${SCRIPT_DIR}/obj_dir -f V${TOP}.mk V${TOP}
 

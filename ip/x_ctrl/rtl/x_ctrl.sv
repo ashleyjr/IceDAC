@@ -12,8 +12,11 @@ module x_ctrl(
    output   logic             o_wdata_valid,
    output   logic    [5:0]    o_wdata,
    // Reads from memory
-   input    logic    [5:0]    i_rdata 
+   input    logic    [5:0]    i_rdata,
+   // Drive out the binary code
+   output   logic    [5:0]    o_bin_code
 );
+
    logic          cmd_valid_q;
    logic [7:0]    cmd_q;
 
@@ -54,6 +57,14 @@ module x_ctrl(
    logic [15:0]   advance_q;
    logic          advance_en;
    logic          advance_top;
+
+   logic [5:0]    cmd_static_d;
+   logic [5:0]    cmd_static_q;
+   logic          cmd_static_en;
+
+   logic          static_d;
+   logic          static_q;
+   logic          cmd_static_toggle_en;
 
    // Flop inputs
    always_ff@(posedge i_clk or negedge i_nrst) begin
@@ -123,15 +134,34 @@ module x_ctrl(
       else if(cmd_addr_cnt_top_en)  addr_cnt_top_q <= addr_cnt_top_d;
    end
 
+   // 4'h7 - Capture static data
+   assign cmd_static_d = {cmd_static_q[1:0], cmd_q[3:0]};
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)             cmd_static_q <= 'd0;
+      else if(cmd_static_en)  cmd_static_q <= cmd_static_d;
+   end
+
+   // 4'h8 - Toggle play contents 
+   assign static_d = ~static_q;
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)                      static_q <= 'd0;
+      else if(cmd_static_toggle_en)    static_q <= static_d;
+   end
+
    // Decode commands
-   assign cmd_addr_en         = (cmd_q[7:4] == 4'h0) & cmd_valid_q;
-   assign cmd_data_en         = (cmd_q[7:4] == 4'h1) & cmd_valid_q;
-   assign cmd_write_valid_d   = (cmd_q[7:4] == 4'h2) & cmd_valid_q & ~play_q;
-   assign p0_cmd_read_valid   = (cmd_q[7:4] == 4'h3) & cmd_valid_q;
-   assign cmd_play_toggle_en  = (cmd_q[7:4] == 4'h4) & cmd_valid_q;
-   assign cmd_advance_top_en  = (cmd_q[7:4] == 4'h5) & cmd_valid_q;
-   assign cmd_addr_cnt_top_en = (cmd_q[7:4] == 4'h6) & cmd_valid_q;
-   
+   assign cmd_addr_en          = (cmd_q[7:4] == 4'h0) & cmd_valid_q;
+   assign cmd_data_en          = (cmd_q[7:4] == 4'h1) & cmd_valid_q;
+   assign cmd_write_valid_d    = (cmd_q[7:4] == 4'h2) & cmd_valid_q & ~play_q;
+   assign p0_cmd_read_valid    = (cmd_q[7:4] == 4'h3) & cmd_valid_q;
+   assign cmd_play_toggle_en   = (cmd_q[7:4] == 4'h4) & cmd_valid_q;
+   assign cmd_advance_top_en   = (cmd_q[7:4] == 4'h5) & cmd_valid_q;
+   assign cmd_addr_cnt_top_en  = (cmd_q[7:4] == 4'h6) & cmd_valid_q;
+   assign cmd_static_en        = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
+   assign cmd_static_toggle_en = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
+
+
    // Address memory
    assign o_addr        = (play_q) ? addr_cnt_q : cmd_addr_q;
    
@@ -166,5 +196,10 @@ module x_ctrl(
       if(!i_nrst)          advance_q <= 'd0;
       else if(advance_en)  advance_q <= advance_d;
    end
+
+   // Mux the bin code
+   assign o_bin_code = (play_q  ) ? i_rdata:
+                       (static_q) ? cmd_static_q:
+                                    'd0;
 
 endmodule

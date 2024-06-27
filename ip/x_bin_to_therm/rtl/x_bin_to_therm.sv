@@ -3,7 +3,7 @@ module x_bin_to_therm#(
 )(
    input  logic                  i_clk,
    input  logic                  i_nrst,
-   input  logic  [$clog2(N):0]   i_bin,
+   input  logic  [$clog2(N)-1:0] i_bin,
    output logic  [N-1:0]         o_therm
 );
    logic  [N:0] shift_d;
