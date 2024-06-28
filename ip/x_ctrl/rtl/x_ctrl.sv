@@ -6,6 +6,7 @@ module x_ctrl(
    input    logic    [7:0]    i_cmd,
    output   logic             o_rsp_valid,
    output   logic    [7:0]    o_rsp,
+   input    logic             i_rsp_accept,
    // Address to memory
    output   logic    [10:0]   o_addr,
    // Writes to memory
@@ -65,6 +66,14 @@ module x_ctrl(
    logic          static_d;
    logic          static_q;
    logic          cmd_static_toggle_en;
+
+   logic          pass;
+   logic [7:0]    rsp_d;
+   logic [7:0]    rsp_q;
+   logic          rsp_en;
+   logic          rsp_valid_en;
+   logic          rsp_valid_d;
+   logic          rsp_valid_q;
 
    // Flop inputs
    always_ff@(posedge i_clk or negedge i_nrst) begin
@@ -161,6 +170,39 @@ module x_ctrl(
    assign cmd_static_en        = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
    assign cmd_static_toggle_en = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
 
+   // All commands have a response (0xA5 == PASS)
+   
+   assign pass = 
+      cmd_addr_en | 
+      cmd_data_en |       
+      cmd_write_valid_d |   
+      cmd_play_toggle_en | 
+      cmd_advance_top_en | 
+      cmd_addr_cnt_top_en |
+      cmd_static_en |       
+      cmd_static_toggle_en;
+
+   assign rsp_d = (pass) ? 8'hA5 : {2'b00,i_rdata}; 
+
+   assign rsp_en = pass | i_rsp_accept | p2_cmd_read_valid; 
+
+   assign o_rsp = rsp_q;
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)       rsp_q <= 'd0;
+      else if(rsp_en)   rsp_q <= rsp_d;
+   end
+
+   assign rsp_valid_d = ~rsp_valid_q;
+
+   assign rsp_valid_en = i_rsp_accept | rsp_en;
+
+   assign o_rsp_valid = rsp_valid_q;
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)             rsp_valid_q <= 'd0;
+      else if(rsp_valid_en)   rsp_valid_q <= rsp_valid_d;
+   end
 
    // Address memory
    assign o_addr        = (play_q) ? addr_cnt_q : cmd_addr_q;

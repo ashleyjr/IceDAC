@@ -27,25 +27,18 @@ module x_mem_2p_2048x2(
       );
    
    `else
+ 
+      logic [1:0] mem [0:2047];
 
-      logic [2047:0] mem_en;
-      logic [1:0]    mem      [0:2047];
-
-      genvar i;
-      generate
-         for(i=0;i<2048;i=i+1) begin
-            
-            assign mem_en[i] = (i_addr == i) && i_we;
-
-            always_ff@(posedge i_clk or negedge i_nrst) begin
-               if(!i_nrst)          mem[i] <= 'd0;
-               else if(mem_en[i])   mem[i] <= i_wdata;
-            end
-
-         end
-      endgenerate
-
-      assign o_rdata = mem[i_addr];
+      always_ff@(posedge i_clk or negedge i_nrst) begin
+         if(!i_nrst)    mem[i_addr] <= 'd0;
+         else if(i_we)  mem[i_addr] <= i_wdata;
+      end
+       
+      always_ff@(posedge i_clk or negedge i_nrst) begin
+         if(!i_nrst)    o_rdata <= 'd0;
+         else           o_rdata <= mem[i_addr];
+      end 
    
    `endif
 endmodule

@@ -16,6 +16,7 @@ verilator --trace \
    --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_rx.sv \
    --cc ${SCRIPT_DIR}/../rtl-uart/rtl/x_uart_tx.sv \
    --cc ${SCRIPT_DIR}/../rtl-uart/verif/lib//uart_driver.cpp \
+   --cc ${SCRIPT_DIR}/../rtl-uart/verif/lib//uart_sink.cpp \
    --exe ${SCRIPT_DIR}/verif/tb.cpp \
    +define+SIM
 
