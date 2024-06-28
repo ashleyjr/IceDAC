@@ -23,6 +23,6 @@ nextpnr-ice40 --hx8k --json x_top.json --package ct256 --pcf ${SCRIPT_DIR}/x_top
 echo "========================================================"
 echo "Running Timing check..."
 icetime -d hx8k x_top.asc > time.log
-cat time.log
+cat time.log 
 echo "========================================================"
 

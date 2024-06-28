@@ -31,8 +31,7 @@ module x_mem(
             else        wdata_q[i] <= i_wdata[(((i+1)*2)-1):(i*2)];
          end
 
-         x_mem_2p_2048x2 u_mem_2p_2048x2 (
-            .i_nrst     (i_nrst     ),
+         x_mem_2p_2048x2 u_mem_2p_2048x2 ( 
             .i_clk      (i_clk      ),
             .i_addr     (addr_q[i]  ),
             .i_we       (we_q[i]    ),

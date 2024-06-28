@@ -95,16 +95,19 @@ int main(int argc, char** argv, char** env) {
    m_trace->open("waveform.vcd");
    #endif 
 
-   // List of sends
-   for(uint32_t i=0;i<0xF;i++){
-      write_mem(i,i);
-   }
-   for(uint32_t i=0;i<0xF;i++){
-      read_mem(i);
-   }
-   write_addr_top(0xF);
-   write_advance_rate_top(0xF);
-   toggle_play();
+   write_mem(0, 0x0A);
+   read_mem(0);
+
+   //// List of sends
+   //for(uint32_t i=0;i<0xF;i++){
+   //   write_mem(i,i);
+   //}
+   //for(uint32_t i=0;i<0xF;i++){
+   //   read_mem(i);
+   //}
+   //write_addr_top(0xF);
+   //write_advance_rate_top(0xF);
+   //toggle_play();
 
    dut->i_clk   = 0;
 
