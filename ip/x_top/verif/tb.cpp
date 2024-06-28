@@ -22,28 +22,6 @@ uint8_t mem[2048];
 VerilatedVcdC *m_trace = new VerilatedVcdC; 
 #endif 
 
-
-void tick(void) {
-   dut->eval();
-   
-   #ifdef TRACE_ENABLED
-   m_trace->dump(sim_time); 
-   #endif
-   sim_time++; 
-
-   // Rising Edge
-   dut->i_clk = 1;
-     
-   dut->eval();
-   #ifdef TRACE_ENABLED
-   m_trace->dump(sim_time); 
-   #endif
-   sim_time++; 
-
-   // Falling Edge
-   dut->i_clk = 0; 
-}
-
 void issue_cmd(uint8_t code, uint8_t data){
    uint8_t cmd;
    cmd = ((code & 0xF) << 4) | (data & 0xF); 
@@ -99,12 +77,10 @@ int main(int argc, char** argv, char** env) {
    read_mem(0);
 
    //// List of sends
-   //for(uint32_t i=0;i<0xF;i++){
-   //   write_mem(i,i);
-   //}
-   //for(uint32_t i=0;i<0xF;i++){
-   //   read_mem(i);
-   //}
+   for(uint32_t i=0;i<100;i++){
+      write_mem(i,i);
+      read_mem(i);
+   }
    //write_addr_top(0xF);
    //write_advance_rate_top(0xF);
    //toggle_play();

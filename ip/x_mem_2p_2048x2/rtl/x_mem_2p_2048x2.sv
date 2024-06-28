@@ -42,12 +42,12 @@ module x_mem_2p_2048x2(
 
     always_ff@(posedge i_clk) begin
        if(i_we)  
-          mem[i_addr[2:0]] <= i_wdata;
+          mem[i_addr] <= i_wdata;
     end
      
     always_ff@(posedge i_clk) begin
        if(n_we)  
-          o_rdata <= mem[i_addr[2:0]];
+          o_rdata <= mem[i_addr];
     end 
    
    //`endif

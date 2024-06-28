@@ -67,7 +67,7 @@ def write_mem(u,addr,data):
     assert u.get() == 0xA5
     u.send(0x20)
     assert u.get() == 0xA5
-    print(f"mem[{addr}] = {data}")
+    print(f"mem[0x{addr:04X}] <- 0x{data:02X}")
 
 def read_mem(u,addr):
     u.send((addr >> 8) & 0x7)
@@ -78,10 +78,8 @@ def read_mem(u,addr):
     assert u.get() == 0xA5
     u.send(0x30)
     d = u.get()
-    print(f"mem[{addr}] -> {d}")
+    print(f"mem[0x{addr:04X}] -> 0x{d:02X}")
     return d
-
-
 
 def mem_test(u):
     addrs = [0,1,2,77,777,2045,2046,2047]
