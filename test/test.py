@@ -11,14 +11,14 @@ KEYWORD="Lattice"
 
 class Uart:
     def send(self, d):
-        #print(f"TX: {hex(d)}")
+        print(f"TX: {hex(d)}")
         self.ser.write(d.to_bytes(1, byteorder='big'))
         while(self.ser.out_waiting > 0):
             pass
 
     def get(self):
         d = int.from_bytes(self.ser.read(1), byteorder='big')
-        #print(f"RX: {hex(int(d))}")
+        print(f"RX: {hex(int(d))}")
         return int(d)
 
     def create(self,port,baud):
@@ -101,12 +101,26 @@ def mem_test(u):
             datas[idx] = data
     print("PASS")
 
+def write_rsp(u,data):
+    u.send(0x90 | ((data >> 4) & 0xF))
+    assert u.get() == 0xA5
+    u.send(0x90 | ((data >> 0) & 0xF))
+    assert u.get() == 0xA5
+    u.send(0xA0)
+    d = u.get()
+    assert d == data
+    print(f"Response 0x{d:02X}")
+    return d
+
+
 def main():
     u = Uart()
     p = u.search()
     u.create(p,9600)
 
-    mem_test(u)
+    #mem_test(u)
+    for i in range(77,87):
+        write_rsp(u, i)
 
     u.destory()
 

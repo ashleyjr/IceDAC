@@ -8,7 +8,6 @@
 #include "../../rtl-uart/verif/lib/include/uart_sink.h"
 #include <stdio.h>
 #include <list>
-#include <format> 
 
 #define TIMEOUT 1000000000
 #define MEM_DEPTH 2048
@@ -45,7 +44,7 @@ void write_mem(uint16_t addr, uint8_t data){
    issue_cmd(0x1, data >> 0);
    issue_cmd(0x2, 0);
    mem[addr] = data; 
-   std::format("mem[{}] <- {}\n", addr, data); 
+   printf ("mem[0x%03x] <- 0x%03x\n", addr, data); 
 }
 
 void read_mem(uint16_t addr){
@@ -54,6 +53,7 @@ void read_mem(uint16_t addr){
    issue_cmd(0x0, addr >> 0); 
    cmds.push_back(0x30);
    rsps.push_back(mem[addr]);
+   printf ("mem[0x%03x] -> 0x%03x\n", addr, mem[addr]); 
 }
 void write_addr_top(uint16_t addr){
    issue_cmd(0x6, addr >> 8);
@@ -71,13 +71,20 @@ void toggle_play(void){
    issue_cmd(0x4, 0);
 }
 
+void write_rsp(uint8_t data){
+   issue_cmd(0x09, data >> 4);
+   issue_cmd(0x09, data);
+   cmds.push_back(0xA0);
+   rsps.push_back(data);
+}
+
 void rand_mem_test(uint32_t x){
    uint16_t addr;
    uint8_t data;
    uint8_t wr_n_rd;;
    bool mem_hit[MEM_DEPTH]; 
    for(uint32_t i=0;i<x;i++){
-      addr = rand() % (sizeof(hot_lines) / sizeof(uint16_t)); 
+      addr = hot_lines[rand() % (sizeof(hot_lines) / sizeof(uint16_t))]; 
       data = rand() % 64;
       if(mem_hit[addr]){
          wr_n_rd = rand() % 2;
@@ -101,13 +108,12 @@ int main(int argc, char** argv, char** env) {
    dut->trace(m_trace, 5);
    m_trace->open("waveform.vcd");
    #endif 
-
-   write_mem(0, 0x0A);
-   read_mem(0);
-
-   rand_mem_test(100);
    
-   
+   write_rsp(0xAA); 
+   write_rsp(0xBB);
+   rand_mem_test(10);
+   write_rsp(0xCC);
+
    //write_addr_top(0xF);
    //write_advance_rate_top(0xF);
    //toggle_play();

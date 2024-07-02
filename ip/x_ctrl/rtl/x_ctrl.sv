@@ -75,6 +75,15 @@ module x_ctrl(
    logic          rsp_valid_d;
    logic          rsp_valid_q;
 
+   logic          cmd_rsp_data_en;
+   logic [7:0]    rsp_data_d;
+   logic [7:0]    rsp_data_q;
+
+   logic          cmd_rsp_send_en;
+   logic          rsp_send_d;
+   logic          rsp_send_q;
+   logic          rsp_send_en;
+
    // Flop inputs
    always_ff@(posedge i_clk or negedge i_nrst) begin
       if(!i_nrst) cmd_valid_q <= 'd0;
@@ -151,12 +160,31 @@ module x_ctrl(
       else if(cmd_static_en)  cmd_static_q <= cmd_static_d;
    end
 
-   // 4'h8 - Toggle play contents 
+   // 4'h8 - Toggle drive static data
    assign static_d = ~static_q;
 
    always_ff@(posedge i_clk or negedge i_nrst) begin
       if(!i_nrst)                      static_q <= 'd0;
       else if(cmd_static_toggle_en)    static_q <= static_d;
+   end
+
+   // 4'h9 - Capture rsp data
+   assign rsp_data_d = {rsp_data_q[3:0], cmd_q[3:0]};
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)                rsp_data_q <= 'd0;
+      else if(cmd_rsp_data_en)   rsp_data_q <= rsp_data_d;
+   end
+
+   // 4'hA - Return rsp data 
+   assign rsp_send_en = cmd_rsp_send_en | 
+                        (rsp_send_q & i_rsp_accept);
+
+   assign rsp_send_d = ~rsp_send_q;
+
+   always_ff@(posedge i_clk or negedge i_nrst) begin
+      if(!i_nrst)             rsp_send_q <= 'd0;
+      else if(rsp_send_en)    rsp_send_q <= rsp_send_d;
    end
 
    // Decode commands
@@ -168,8 +196,10 @@ module x_ctrl(
    assign cmd_advance_top_en   = (cmd_q[7:4] == 4'h5) & cmd_valid_q;
    assign cmd_addr_cnt_top_en  = (cmd_q[7:4] == 4'h6) & cmd_valid_q;
    assign cmd_static_en        = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
-   assign cmd_static_toggle_en = (cmd_q[7:4] == 4'h7) & cmd_valid_q;
-
+   assign cmd_static_toggle_en = (cmd_q[7:4] == 4'h8) & cmd_valid_q;
+   assign cmd_rsp_data_en      = (cmd_q[7:4] == 4'h9) & cmd_valid_q;
+   assign cmd_rsp_send_en      = (cmd_q[7:4] == 4'hA) & cmd_valid_q;
+   
    // All commands have a response (0xA5 == PASS)
    
    assign pass = 
@@ -180,13 +210,14 @@ module x_ctrl(
       cmd_advance_top_en | 
       cmd_addr_cnt_top_en |
       cmd_static_en |       
-      cmd_static_toggle_en;
+      cmd_static_toggle_en |
+      cmd_rsp_data_en;
 
    assign rsp_d = (pass) ? 8'hA5 : {2'b00,i_rdata}; 
 
-   assign rsp_en = pass | i_rsp_accept | p2_cmd_read_valid; 
+   assign rsp_en = pass | p2_cmd_read_valid; 
 
-   assign o_rsp = rsp_q;
+   assign o_rsp = (rsp_send_q) ? rsp_data_q : rsp_q;
 
    always_ff@(posedge i_clk or negedge i_nrst) begin
       if(!i_nrst)       rsp_q <= 'd0;
@@ -195,9 +226,9 @@ module x_ctrl(
 
    assign rsp_valid_d = ~rsp_valid_q;
 
-   assign rsp_valid_en = i_rsp_accept | rsp_en;
+   assign rsp_valid_en = (rsp_valid_q) ? i_rsp_accept : rsp_en;
 
-   assign o_rsp_valid = rsp_valid_q;
+   assign o_rsp_valid = rsp_send_q | rsp_valid_q;
 
    always_ff@(posedge i_clk or negedge i_nrst) begin
       if(!i_nrst)             rsp_valid_q <= 'd0;
