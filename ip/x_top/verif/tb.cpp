@@ -114,13 +114,14 @@ int main(int argc, char** argv, char** env) {
    rand_mem_test(10);
    write_rsp(0xCC);
 
-   //write_addr_top(0xF);
-   //write_advance_rate_top(0xF);
-   //toggle_play();
+   write_addr_top(0xF);
+   write_advance_rate_top(0xF);
+   toggle_play();
+   toggle_play();
+   toggle_play();
 
    dut->i_clk   = 0;
-
-    
+ 
    for (int32_t i=0;i<TIMEOUT;i++){
      
       // Queue up more cmd/rsp pairs
