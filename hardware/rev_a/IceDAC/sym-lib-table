@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "IceDAC")(type "KiCad")(uri "${KIPRJMOD}/IceDAC.kicad_sym")(options "")(descr ""))
+)
